@@ -1,5 +1,10 @@
 <script>
+  import FaRegHeart from "svelte-icons/fa/FaRegHeart.svelte";
+  import FaLock from "svelte-icons/fa/FaLock.svelte";
+  import FaLockOpen from "svelte-icons/fa/FaLockOpen.svelte";
+  import FaTrash from "svelte-icons/fa/FaTrash.svelte";
   import { onMount } from "svelte";
+
   let data = [];
   let numNames = 0;
   let names = [];
@@ -38,32 +43,89 @@
 
 <h1>Svelte Names</h1>
 
-<input type="number" min="1" max="5" on:change|preventDefault={handleChange} />
-<button
-  on:click={() =>
-    (names = names.map((o) => (o.locked ? o : { ...o, ...getRandomName() })))}
-  >random</button
->
-{#each names as o, i}
-  <div>
-    <p>{o.name ?? "x"}</p>
+<main>
+  <section>
+    <h2>Favourites</h2>
+    <ul>
+      {#each favourites as name}
+        <li>
+          <span>{name}</span><button
+            on:click={() => removeFromFavourites(name)}
+            class="icon-btn"><FaTrash /></button
+          >
+        </li>
+      {/each}
+    </ul>
+  </section>
+  <section>
+    <h2>Find names</h2>
+    <input
+      type="number"
+      min="1"
+      max="5"
+      on:change|preventDefault={handleChange}
+    />
     <button
-      on:click={() => (names[i] = { ...names[i], locked: !o.locked })}
-      disabled={!o.name}>{o.locked ? "un" : ""}lock</button
+      on:click={() =>
+        (names = names.map((o) =>
+          o.locked ? o : { ...o, ...getRandomName() }
+        ))}>random</button
     >
-    <button on:click={() => addToFavourites(o.name)} disabled={!o.name}
-      >heart</button
-    >
-  </div>
-{/each}
+    {#each names as o, i}
+      <div class="name-group">
+        <p>{o.name || "[ new name ]"}</p>
+        <button
+          on:click={() => (names[i] = { ...names[i], locked: !o.locked })}
+          disabled={!o.name}
+          class="icon-btn"
+        >
+          {#if o.locked}
+            <FaLock />
+          {:else}
+            <FaLockOpen />
+          {/if}
+        </button>
+        <button
+          on:click={() => addToFavourites(o.name)}
+          disabled={!o.name}
+          class="icon-btn red"><FaRegHeart /></button
+        >
+      </div>
+    {/each}
+  </section>
+</main>
 
-<h2>Favourites</h2>
-<ul>
-  {#each favourites as name}
-    <li>
-      <span>{name}</span><button on:click={() => removeFromFavourites(name)}
-        >&times;</button
-      >
-    </li>
-  {/each}
-</ul>
+<style>
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .icon-btn {
+    cursor: pointer;
+    border: none;
+    height: 1.4rem;
+    width: 1.4rem;
+    background-color: transparent;
+  }
+  .icon-btn:nth-of-type(1) {
+    margin-left: 0.5rem;
+  }
+  .icon-btn:hover {
+    color: #333;
+  }
+  .red {
+    color: red;
+  }
+  ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+  li {
+    display: flex;
+  }
+  .name-group {
+    display: flex;
+    align-items: center;
+  }
+</style>
