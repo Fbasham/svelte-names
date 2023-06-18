@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from dataframe import generate_dataframe
 
-df = generate_dataframe()
+df = generate_dataframe(min_freq=10000)
 
 app = FastAPI()
 
